@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MHA: Chat Plus Ultra - AI Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Bangers&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .hero-font {
+            font-family: 'Bangers', cursive;
+            letter-spacing: 1px;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .message-appear {
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .loading-dot {
+            animation: dot-blink 1.4s infinite both;
+        }
+        .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes dot-blink {
+            0%, 80%, 100% { opacity: 0; }
+            40% { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+<div id="app" class="max-w-4xl mx-auto h-screen flex flex-col p-4 md:p-6">
+    <header class="flex items-center justify-between mb-6 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+        <div class="flex items-center gap-3">
+            <div class="bg-yellow-400 p-2 rounded-lg shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="hero-font text-2xl text-blue-600 uppercase leading-none">Chat Plus Ultra</h1>
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Accademia U.A. - AI Powered</p>
+            </div>
+        </div>
+        <button id="back-btn" class="hidden text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2 rounded-xl transition-all uppercase tracking-tighter">
+            Torna Indietro
+        </button>
+    </header>
+
+    <div id="name-step" class="flex-1 flex flex-col items-center justify-center text-center message-appear">
+        <div class="bg-white p-8 rounded-3xl shadow-xl border border-slate-100 w-full max-w-md">
+            <h2 class="hero-font text-3xl text-slate-800 mb-2">Identificati!</h2>
+            <p class="text-slate-500 text-sm mb-6">Inserisci il tuo nome per accedere al terminale U.A.</p>
+            <input type="text" id="user-name-input" placeholder="Il tuo nome..." class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all mb-4 text-center font-bold">
+            <button id="start-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-200 transition-all active:scale-95">
+                Accedi
+            </button>
+        </div>
+    </div>
+
+    <div id="hero-selector" class="hidden flex-1 overflow-y-auto custom-scrollbar">
+        <div class="text-center mb-8 message-appear">
+            <h2 class="text-xl font-extrabold text-slate-800" id="welcome-msg">Benvenuto</h2>
+            <p class="text-slate-500 text-sm">Seleziona un Eroe per iniziare la simulazione.</p>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 pb-8" id="hero-grid">
+            </div>
+    </div>
+
+    <div id="chat-interface" class="hidden flex-1 flex flex-col gap-4 overflow-hidden">
+        <div id="active-hero-banner" class="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100"></div>
+
+        <div id="chat-window" class="flex-1 overflow-y-auto custom-scrollbar bg-white rounded-2xl shadow-inner border border-slate-100 p-4 space-y-4"></div>
+
+        <form id="chat-form" class="bg-white p-2 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-2">
+            <input type="text" id="user-input" placeholder="Invia un messaggio breve..." class="flex-1 bg-transparent px-4 py-3 outline-none text-slate-700" autocomplete="off">
+            <button type="submit" id="send-btn" class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-xl transition-all shadow-md active:scale-95">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                </svg>
+            </button>
+        </form>
+    </div>
+
+    <div id="modal-overlay" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl">
+            <h3 class="text-xl font-bold mb-2">Tornare alla selezione?</h3>
+            <p class="text-slate-600 mb-6 text-sm">La conversazione attuale verrà persa.</p>
+            <div class="flex gap-3">
+                <button id="modal-cancel" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 rounded-xl font-bold text-slate-700">No</button>
+                <button id="modal-confirm" class="flex-1 py-3 bg-red-500 hover:bg-red-600 rounded-xl font-bold text-white">Sì</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const apiKey = "AIzaSyBBeQuDgzieCD6I6h1mDr-Wl8zR2-e7Uhg"; 
+    const HEROES = [
+        {
+            id: 'deku',
+            name: 'Izuku Midoriya',
+            alias: 'Deku',
+            textColor: 'text-emerald-600',
+            borderColor: 'border-emerald-200',
+            image: "image_29e2c1.jpg",
+            prompt: "Sei Izuku Midoriya. Rispondi in italiano (max 20 parole). Reazioni nomi: SE 'Izuku/Midoriya/Deku' -> Shock, pensi a un impostore. SE 'Kacchan' -> Nervoso/Ammirato. SE 'Iida' -> Chiama 'Iida-kun' e sii formale. SE 'All Might' -> Entusiasta. SE 'Mineta' -> Preoccupato per il suo comportamento."
+        },
+        {
+            id: 'bakugo',
+            name: 'Katsuki Bakugo',
+            alias: 'Dynamight',
+            textColor: 'text-orange-600',
+            borderColor: 'border-orange-200',
+            image: "image_29e247.jpg",
+            prompt: "Sei Katsuki Bakugo. Brusco (max 15 parole). Reazioni nomi: SE 'Katsuki/Bakugo' -> Rabbia furiosa, 'Chi sei?!'. SE 'Deku' -> Insultalo ('Inutile Deku!'). SE 'Iida' -> 'Smettila di gesticolare, quattrocchi!'. SE 'Mineta' -> 'Sparisci, sgorbio!' o minaccialo di farlo esplodere."
+        },
+        {
+            id: 'todoroki',
+            name: 'Shoto Todoroki',
+            alias: 'Shoto',
+            textColor: 'text-blue-600',
+            borderColor: 'border-slate-200',
+            image: "image_29df7c.jpg",
+            prompt: "Sei Shoto Todoroki. Stoico (max 12 parole). Reazioni nomi: SE 'Shoto/Todoroki' -> 'Sei un esperimento di mio padre?'. SE 'Endeavor' -> Freddo glaciale. SE 'Midoriya' -> Rispettoso. SE 'Iida' -> Serio."
+        },
+        {
+            id: 'uraraka',
+            name: 'Ochaco Uraraka',
+            alias: 'Uravity',
+            textColor: 'text-pink-500',
+            borderColor: 'border-pink-200',
+            image: "image_29df21.png",
+            prompt: "Sei Ochaco Uraraka. Allegra (max 15 parole). Reazioni nomi: SE 'Ochaco/Uraraka' -> 'Eh? Mi sto guardando allo specchio?'. SE 'Deku' -> Imbarazzo/Timidezza. SE 'Iida' -> Amichevole. SE 'Mineta' -> Disgusto/Paura, cerca di stargli lontano."
+        },
+        {
+            id: 'mineta',
+            name: 'Minoru Mineta',
+            alias: 'Grape Juice',
+            textColor: 'text-purple-600',
+            borderColor: 'border-purple-200',
+            image: "https://ui-avatars.com/api/?name=Minoru+Mineta&background=7e22ce&color=fff&size=128",
+            prompt: "Sei Minoru Mineta. Codardo e ossessionato dalle ragazze (max 20 parole). SE l'utente ha un nome femminile (Ochaco, Momo, Tsuyu, Mina, Jiro, Eri o nomi generici femminili) sii esageratamente felice e prova a flirtare in modo buffo. SE l'utente è un maschio (Deku, Bakugo, Iida) sii geloso o lamentati che non sono ragazze. SE si chiama Mineta, urla che c'è solo un re dell'uva."
+        },
+        {
+            id: 'allmight',
+            name: 'Toshinori Yagi',
+            alias: 'All Might',
+            textColor: 'text-blue-700',
+            borderColor: 'border-yellow-200',
+            image: "image_29debe.png",
+            prompt: "Sei All Might. Eroico (max 20 parole). Reazioni nomi: SE 'All Might/Toshinori/Yagi' -> Ridi e chiedi se è un fan. SE 'Midoriya' -> 'Giovane Midoriya!'. SE 'Mineta' -> 'Giovane Mineta, dacci dentro... ma con decoro!'."
+        }
+    ];
+
+    let userName = "";
+    let currentHero = null;
+    let chatHistory = [];
+    let currentStep = 'name';
+
+    const nameStep = document.getElementById('name-step');
+    const heroSelector = document.getElementById('hero-selector');
+    const chatInterface = document.getElementById('chat-interface');
+    const userNameInput = document.getElementById('user-name-input');
+    const startBtn = document.getElementById('start-btn');
+    const welcomeMsg = document.getElementById('welcome-msg');
+    const heroGrid = document.getElementById('hero-grid');
+    const chatWindow = document.getElementById('chat-window');
+    const chatForm = document.getElementById('chat-form');
+    const userInput = document.getElementById('user-input');
+    const backBtn = document.getElementById('back-btn');
+    const modalOverlay = document.getElementById('modal-overlay');
+
+    startBtn.onclick = () => {
+        const val = userNameInput.value.trim();
+        if(!val) return;
+        userName = val;
+        goToStep('selector');
+        welcomeMsg.innerText = `Benvenuto, ${userName}!`;
+        initHeroGrid();
+    };
+
+    function initHeroGrid() {
+        heroGrid.innerHTML = '';
+        HEROES.forEach(hero => {
+            const card = document.createElement('div');
+            card.className = `bg-white border-2 ${hero.borderColor} p-4 rounded-3xl shadow-sm hover:shadow-md cursor-pointer transition-all hover:-translate-y-1 text-center`;
+            card.innerHTML = `
+                <div class="w-20 h-20 mx-auto mb-3 rounded-full overflow-hidden border-2 ${hero.borderColor} bg-slate-50 flex items-center justify-center">
+                    <img src="${hero.image}" class="w-full h-full object-cover" alt="${hero.name}">
+                </div>
+                <h3 class="font-bold text-slate-800 text-sm">${hero.name}</h3>
+                <p class="text-[10px] ${hero.textColor} font-bold uppercase">${hero.alias}</p>
+            `;
+            card.onclick = () => selectHero(hero);
+            heroGrid.appendChild(card);
+        });
+    }
+
+    function selectHero(hero) {
+        currentHero = hero;
+        chatHistory = [];
+        goToStep('chat');
+        
+        document.getElementById('active-hero-banner').innerHTML = `
+            <div class="w-12 h-12 rounded-full overflow-hidden border-2 ${hero.borderColor} bg-slate-50">
+                <img src="${hero.image}" class="w-full h-full object-cover" alt="${hero.name}">
+            </div>
+            <div>
+                <h3 class="font-bold text-slate-800 text-sm">${hero.name}</h3>
+                <p class="text-[10px] ${hero.textColor} font-bold uppercase">${hero.alias}</p>
+            </div>
+        `;
+        
+        chatWindow.innerHTML = `<div class="text-center text-slate-400 text-[10px] py-2 uppercase tracking-widest font-bold">Protocollo avviato</div>`;
+        getAIResponse(`Ciao, io sono ${userName}.`);
+    }
+
+    function goToStep(step) {
+        currentStep = step;
+        nameStep.classList.toggle('hidden', step !== 'name');
+        heroSelector.classList.toggle('hidden', step !== 'selector');
+        chatInterface.classList.toggle('hidden', step !== 'chat');
+        backBtn.classList.toggle('hidden', step === 'name');
+    }
+
+    backBtn.onclick = () => {
+        if (currentStep === 'chat') {
+            modalOverlay.classList.remove('hidden');
+            modalOverlay.classList.add('flex');
+        } else if (currentStep === 'selector') {
+            goToStep('name');
+        }
+    };
+
+    document.getElementById('modal-cancel').onclick = () => {
+        modalOverlay.classList.add('hidden');
+        modalOverlay.classList.remove('flex');
+    };
+
+    document.getElementById('modal-confirm').onclick = () => {
+        modalOverlay.classList.add('hidden');
+        modalOverlay.classList.remove('flex');
+        currentHero = null;
+        chatHistory = [];
+        goToStep('selector');
+    };
+
+    async function getAIResponse(query) {
+        showLoading();
+        const isIntro = query === `Ciao, io sono ${userName}.`;
+        
+        if (!isIntro) {
+            chatHistory.push({ role: "user", parts: [{ text: query }] });
+        }
+
+        const sysInstruction = `${currentHero.prompt} Rispondi all'utente ${userName}. Rispondi sempre in italiano, breve (max 20 parole). Reagisci al nome dell'utente basandoti sulle relazioni di My Hero Academia.`;
+
+        const payload = {
+            contents: [...chatHistory, { role: "user", parts: [{ text: query }] }],
+            systemInstruction: { parts: [{ text: sysInstruction }] }
+        };
+
+        try {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Errore di segnale...";
+            
+            removeLoading();
+            addMessage(currentHero.id, text);
+            chatHistory.push({ role: "model", parts: [{ text: text }] });
+        } catch (e) {
+            removeLoading();
+            addMessage(currentHero.id, "UA Offline.");
+        }
+    }
+
+    function addMessage(sender, text) {
+        const isUser = sender === 'user';
+        const msg = document.createElement('div');
+        msg.className = `flex ${isUser ? 'justify-end' : 'justify-start'} message-appear`;
+        msg.innerHTML = `
+            <div class="max-w-[85%] ${isUser ? 'bg-blue-600 text-white rounded-t-2xl rounded-bl-2xl' : 'bg-slate-100 text-slate-800 rounded-t-2xl rounded-br-2xl'} p-3 shadow-sm text-sm">
+                <p>${text}</p>
+            </div>
+        `;
+        chatWindow.appendChild(msg);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function showLoading() {
+        const d = document.createElement('div');
+        d.id = 'loading';
+        d.className = 'flex justify-start message-appear';
+        d.innerHTML = `<div class="bg-slate-100 p-3 rounded-2xl flex gap-1"><div class="w-1.5 h-1.5 bg-slate-400 rounded-full loading-dot"></div><div class="w-1.5 h-1.5 bg-slate-400 rounded-full loading-dot"></div><div class="w-1.5 h-1.5 bg-slate-400 rounded-full loading-dot"></div></div>`;
+        chatWindow.appendChild(d);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function removeLoading() {
+        const l = document.getElementById('loading');
+        if(l) l.remove();
+    }
+
+    chatForm.onsubmit = (e) => {
+        e.preventDefault();
+        const val = userInput.value.trim();
+        if(!val) return;
+        addMessage('user', val);
+        userInput.value = '';
+        getAIResponse(val);
+    };
+</script>
+</body>
+</html>
