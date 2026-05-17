@@ -47,7 +47,6 @@
 <body class="bg-slate-50 text-slate-900 flex flex-col min-h-screen">
 
 <div id="app" class="max-w-4xl w-full mx-auto h-screen flex flex-col p-3 md:p-6 justify-between">
-    <!-- Header -->
     <header class="flex items-center justify-between mb-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100 shrink-0">
         <div class="flex items-center gap-3">
             <div class="bg-yellow-400 p-2 rounded-xl shadow-sm">
@@ -65,7 +64,6 @@
         </button>
     </header>
 
-    <!-- Step 1: Inserimento Nome -->
     <div id="name-step" class="flex-1 flex flex-col items-center justify-center text-center message-appear p-2">
         <div class="bg-white p-6 md:p-8 rounded-3xl shadow-xl border border-slate-100 w-full max-w-md">
             <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-md rotate-3">
@@ -80,18 +78,15 @@
         </div>
     </div>
 
-    <!-- Step 2: Selettore Eroi -->
     <div id="hero-selector" class="hidden flex-1 overflow-y-auto custom-scrollbar px-1">
         <div class="text-center mb-6 message-appear">
             <h2 class="text-lg md:text-xl font-extrabold text-slate-800" id="welcome-msg">Benvenuto</h2>
             <p class="text-slate-500 text-xs">Seleziona un Eroe per avviare la simulazione di comunicazione.</p>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 pb-6" id="hero-grid">
-            <!-- Eroi iniettati da JS -->
-        </div>
+            </div>
     </div>
 
-    <!-- Step 3: Interfaccia Chat -->
     <div id="chat-interface" class="hidden flex-1 flex flex-col gap-3 overflow-hidden">
         <div id="active-hero-banner" class="flex items-center gap-3 bg-white p-3 rounded-2xl shadow-sm border border-slate-100 shrink-0"></div>
 
@@ -107,7 +102,6 @@
         </form>
     </div>
 
-    <!-- Modals -->
     <div id="modal-overlay" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-3xl p-6 max-w-xs w-full shadow-2xl message-appear">
             <h3 class="text-lg font-bold mb-1">Tornare indietro?</h3>
@@ -121,7 +115,7 @@
 </div>
 
 <script>
-    // La tua chiave API corretta recuperata con successo
+    // La chiave viene inizializzata vuota e modificata via let per non bloccare il browser
     let apiKey = ""; 
     
     const HEROES = [
@@ -209,10 +203,13 @@
     function getFallbackAvatar(hero) {
         return `https://ui-avatars.com/api/?name=${encodeURIComponent(hero.name)}&background=${hero.textColor.includes('emerald') ? '10b981' : hero.textColor.includes('orange') ? 'f97316' : hero.textColor.includes('blue') ? '3b82f6' : hero.textColor.includes('pink') ? 'ec4899' : '7e22ce'}&color=fff&size=128&bold=true`;
     }
-        startBtn.onclick = () => {
+
+    // Gestione click del pulsante principale di accesso
+    startBtn.onclick = () => {
         const val = userNameInput.value.trim();
         if(!val) return;
         
+        // Richiesta password/chiave immersiva in stile U.A.
         const savedKey = prompt("🚨 TERMINALE U.A. - SISTEMA DI SICUREZZA 🚨\n\nIdentificazione richiesta.\nInserisci il codice di autorizzazione della tua licenza provvisoria da Eroe (Gemini API Key):");
         
         if(!savedKey) {
@@ -225,15 +222,6 @@
         goToStep('selector');
         welcomeMsg.innerText = `Benvenuto, ${userName}!`;
         initHeroGrid();
-    };
-        }
-        
-        apiKey = savedKey.trim();
-        userName = val;
-        goToStep('selector');
-        welcomeMsg.innerText = `Benvenuto, ${userName}!`;
-        initHeroGrid();
-    };
     };
 
     function initHeroGrid() {
@@ -313,12 +301,13 @@
         const sysInstruction = `${currentHero.prompt} Rispondi all'utente ${userName}. Rispondi sempre in italiano, in modo brevissimo (max 20 parole). Sii molto fedele al tuo carattere e alle relazioni del manga.`;
 
         const payload = {
-            contents: [...chatHistory, { role: "user", parts: [{ text: query }] }],
+            contents: [...chatHistory],
             systemInstruction: { parts: [{ text: sysInstruction }] }
         };
 
+        // Aggiornato all'endpoint stabile corretto v1 per evitare blocchi
         try {
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
