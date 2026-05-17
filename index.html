@@ -47,6 +47,7 @@
 <body class="bg-slate-50 text-slate-900 flex flex-col min-h-screen">
 
 <div id="app" class="max-w-4xl w-full mx-auto h-screen flex flex-col p-3 md:p-6 justify-between">
+    <!-- Header -->
     <header class="flex items-center justify-between mb-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100 shrink-0">
         <div class="flex items-center gap-3">
             <div class="bg-yellow-400 p-2 rounded-xl shadow-sm">
@@ -64,37 +65,58 @@
         </button>
     </header>
 
+    <!-- Step 1: Inserimento Nome e Chiave di Sicurezza -->
     <div id="name-step" class="flex-1 flex flex-col items-center justify-center text-center message-appear p-2">
         <div class="bg-white p-6 md:p-8 rounded-3xl shadow-xl border border-slate-100 w-full max-w-md">
             <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-md rotate-3">
                 <span class="text-white font-black text-2xl hero-font">UA</span>
             </div>
             <h2 class="hero-font text-3xl text-slate-800 mb-2">IDENTIFICATI!</h2>
-            <p class="text-slate-500 text-xs md:text-sm mb-6">Inserisci il tuo nome da eroe o studente per accedere al sistema della Classe 1-A.</p>
-            <input type="text" id="user-name-input" placeholder="Il tuo nome..." class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-3.5 outline-none focus:border-blue-500 transition-all mb-4 text-center font-bold text-base">
+            <p class="text-slate-500 text-xs md:text-sm mb-6">Identificazione richiesta per accedere alla rete di comunicazione della Classe 1-A.</p>
+            
+            <div class="space-y-4 mb-5 text-left">
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Identificativo Eroe o Studente:</label>
+                    <input type="text" id="user-name-input" placeholder="Il tuo nome o alias..." class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-3 outline-none focus:border-blue-500 transition-all text-center font-bold text-base">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Codice Licenza (Gemini API Key):</label>
+                    <input type="password" id="user-api-input" placeholder="Incolla qui la tua API Key..." class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-3 outline-none focus:border-blue-500 transition-all font-mono text-xs text-center animate-none">
+                    <p class="text-[9px] text-slate-400 mt-1 ml-1 text-center">La chiave rimarrà salvata localmente sul tuo dispositivo per sicurezza.</p>
+                </div>
+            </div>
+
             <button id="start-btn" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-blue-100 transition-all uppercase tracking-wider text-sm">
                 Accedi al Terminale
             </button>
+
+            <!-- Messaggio di errore inline se i campi sono vuoti -->
+            <div id="login-error-msg" class="hidden mt-4 text-xs font-bold text-red-500 bg-red-50 p-3 rounded-2xl border border-red-100">
+                ⚠️ Inserisci sia il tuo nome che la chiave API!
+            </div>
         </div>
     </div>
 
+    <!-- Step 2: Selettore Eroi -->
     <div id="hero-selector" class="hidden flex-1 overflow-y-auto custom-scrollbar px-1">
         <div class="text-center mb-6 message-appear">
             <h2 class="text-lg md:text-xl font-extrabold text-slate-800" id="welcome-msg">Benvenuto</h2>
             <p class="text-slate-500 text-xs">Seleziona un Eroe per avviare la simulazione di comunicazione.</p>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 pb-6" id="hero-grid">
-            </div>
+            <!-- Eroi iniettati da JS -->
+        </div>
     </div>
 
+    <!-- Step 3: Interfaccia Chat -->
     <div id="chat-interface" class="hidden flex-1 flex flex-col gap-3 overflow-hidden">
         <div id="active-hero-banner" class="flex items-center gap-3 bg-white p-3 rounded-2xl shadow-sm border border-slate-100 shrink-0"></div>
 
         <div id="chat-window" class="flex-1 overflow-y-auto custom-scrollbar bg-white rounded-2xl shadow-inner border border-slate-100 p-3 space-y-3"></div>
 
-        <form id="chat-form" class="bg-white p-1.5 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-2 shrink-0">
+        <form id="chat-form" class="bg-white p-1.5 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-2 shrink-0 transition-all">
             <input type="text" id="user-input" placeholder="Invia un messaggio breve..." class="flex-1 bg-transparent px-3 py-2.5 outline-none text-slate-700 text-sm" autocomplete="off">
-            <button type="submit" id="send-btn" class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white p-2.5 rounded-xl transition-all shadow-md">
+            <button type="submit" id="send-btn" class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white p-2.5 rounded-xl transition-all shadow-md disabled:bg-slate-200 disabled:text-slate-400 disabled:scale-100 disabled:shadow-none">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
                 </svg>
@@ -102,6 +124,7 @@
         </form>
     </div>
 
+    <!-- Modals -->
     <div id="modal-overlay" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-3xl p-6 max-w-xs w-full shadow-2xl message-appear">
             <h3 class="text-lg font-bold mb-1">Tornare indietro?</h3>
@@ -115,8 +138,9 @@
 </div>
 
 <script>
-    // La chiave viene inizializzata vuota e modificata via let per non bloccare il browser
+    // La chiave viene memorizzata in memoria locale temporanea all'accesso
     let apiKey = ""; 
+    let isWaitingForResponse = false;
     
     const HEROES = [
         {
@@ -167,7 +191,7 @@
             borderColor: 'border-purple-200',
             bgColor: 'bg-purple-500',
             image: "https://ui-avatars.com/api/?name=Minoru+Mineta&background=7e22ce&color=fff&size=128",
-            prompt: "Sei Minoru Mineta. Codardo e ossessionato dalle ragazze (max 20 parole). SE l'utente ha un nome femminile (Ochaco, Momo, Tsuyu, Mina, Jiro) sii felicissimo e prova a flirtare in modo buffo. SE è maschio (Deku, Bakugo, Iida) sii geloso o lamentati."
+            prompt: "Sei Minoru Mineta. Codardo e ossessionato dalle ragazze (max 20 parole). SE l'utente ha un nome femminile (Ochaco, Momo, Tsuyu, Mina, Jiro) sii felicissimo and prova a flirtare in modo buffo. SE è maschio (Deku, Bakugo, Iida) sii geloso o lamentati."
         },
         {
             id: 'allmight',
@@ -190,35 +214,47 @@
     const heroSelector = document.getElementById('hero-selector');
     const chatInterface = document.getElementById('chat-interface');
     const userNameInput = document.getElementById('user-name-input');
+    const userApiInput = document.getElementById('user-api-input');
+    const loginErrorMsg = document.getElementById('login-error-msg');
     const startBtn = document.getElementById('start-btn');
     const welcomeMsg = document.getElementById('welcome-msg');
     const heroGrid = document.getElementById('hero-grid');
     const chatWindow = document.getElementById('chat-window');
     const chatForm = document.getElementById('chat-form');
     const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
     const backBtn = document.getElementById('back-btn');
     const modalOverlay = document.getElementById('modal-overlay');
 
-    // Funzione per generare avatar di riserva se l'immagine locale fallisce
+    // Recupera i dati precedentemente salvati in locale per comodità
+    if (localStorage.getItem('mha_gemini_key')) {
+        userApiInput.value = localStorage.getItem('mha_gemini_key');
+    }
+    if (localStorage.getItem('mha_user_name')) {
+        userNameInput.value = localStorage.getItem('mha_user_name');
+    }
+
+    // Genera avatar colorati nel caso in cui le immagini sul PC locale manchino online
     function getFallbackAvatar(hero) {
         return `https://ui-avatars.com/api/?name=${encodeURIComponent(hero.name)}&background=${hero.textColor.includes('emerald') ? '10b981' : hero.textColor.includes('orange') ? 'f97316' : hero.textColor.includes('blue') ? '3b82f6' : hero.textColor.includes('pink') ? 'ec4899' : '7e22ce'}&color=fff&size=128&bold=true`;
     }
 
-    // Gestione click del pulsante principale di accesso
+    // Accesso sicuro con validazione nome e API key
     startBtn.onclick = () => {
-        const val = userNameInput.value.trim();
-        if(!val) return;
+        const nameVal = userNameInput.value.trim();
+        const keyVal = userApiInput.value.trim();
         
-        // Richiesta password/chiave immersiva in stile U.A.
-        const savedKey = prompt("🚨 TERMINALE U.A. - SISTEMA DI SICUREZZA 🚨\n\nIdentificazione richiesta.\nInserisci il codice di autorizzazione della tua licenza provvisoria da Eroe (Gemini API Key):");
-        
-        if(!savedKey) {
-            alert("❌ ACCESSO NEGATO!\nSenza codice di autorizzazione non puoi connetterti alla Classe 1-A.");
+        if(!nameVal || !keyVal) {
+            loginErrorMsg.classList.remove('hidden');
             return;
         }
         
-        apiKey = savedKey.trim();
-        userName = val;
+        localStorage.setItem('mha_gemini_key', keyVal);
+        localStorage.setItem('mha_user_name', nameVal);
+        
+        loginErrorMsg.classList.add('hidden');
+        apiKey = keyVal;
+        userName = nameVal;
         goToStep('selector');
         welcomeMsg.innerText = `Benvenuto, ${userName}!`;
         initHeroGrid();
@@ -241,6 +277,26 @@
         });
     }
 
+    // Genera localmente il saluto di benvenuto iniziale senza dover fare chiamate API (risparmio quota Gemini!)
+    function getLocalWelcomeMessage(hero, name) {
+        switch(hero.id) {
+            case 'deku':
+                return `Ciao, giovane ${name}! È un onore conoscerti! Come posso esserti utile per il nostro addestramento oggi?`;
+            case 'bakugo':
+                return `Ehi, ${name.toUpperCase()}! Che diavolo vuoi da me?! Parla in fretta e non farmi perdere tempo! 💥`;
+            case 'todoroki':
+                return `Ciao ${name}. Sono Shoto Todoroki. Di cosa hai bisogno?`;
+            case 'uraraka':
+                return `Ciao ${name}! Che bello sentirti! È tutto pronto per fare un po' di pratica insieme! 🌸`;
+            case 'mineta':
+                return `Ehi ehi, ciao ${name}! Sei qui per ammirare le mie fantastiche sfere? Parliamo un po'!`;
+            case 'allmight':
+                return `IO SONO QUI! Salve, giovane ${name}! Come posso aiutarti oggi nella tua strada verso la giustizia?! 💪`;
+            default:
+                return `Terminale attivo. Ciao ${name}, pronto a comunicare.`;
+        }
+    }
+
     function selectHero(hero) {
         currentHero = hero;
         chatHistory = [];
@@ -257,7 +313,18 @@
         `;
         
         chatWindow.innerHTML = `<div class="text-center text-slate-400 text-[9px] py-1 uppercase tracking-widest font-bold">Terminale U.A. Attivo</div>`;
-        getAIResponse(`Ciao, io sono ${userName}.`);
+        
+        // Carica il benvenuto in-character in modo istantaneo e 100% offline!
+        const welcomeMessage = getLocalWelcomeMessage(hero, userName);
+        addMessage(hero.id, welcomeMessage);
+        
+        // NOTA IMPORTANTE DI SICUREZZA:
+        // NON carichiamo il benvenuto iniziale in chatHistory, così la cronologia inviata a Google 
+        // inizierà sempre correttamente con il primo messaggio inviato dall'utente ("user").
+        // Questo risolve al 100% l'errore immediato INVALID_ARGUMENT o BAD_REQUEST all'avvio!
+        
+        // Sblocca gli input
+        setInputLock(false);
     }
 
     function goToStep(step) {
@@ -290,37 +357,161 @@
         goToStep('selector');
     };
 
-    async function getAIResponse(query) {
-        showLoading();
-        const isIntro = query === `Ciao, io sono ${userName}.`;
-        
-        if (!isIntro) {
-            chatHistory.push({ role: "user", parts: [{ text: query }] });
+    // Funzione helper per bloccare e sbloccare solo il pulsante di invio, lasciando l'input sempre attivo per farti scrivere liberamente!
+    function setInputLock(blocked, placeholderText = "Invia un messaggio breve...") {
+        isWaitingForResponse = blocked;
+        sendBtn.disabled = blocked; // Solo il pulsante invio si blocca temporaneamente
+        userInput.placeholder = placeholderText; // La casella rimane sempre sbloccata per farti digitare!
+    }
+
+    // Messaggi di attesa divertenti e fedeli ai personaggi per mascherare il blocco di Google
+    function getFallbackInCharacterMessage(heroId) {
+        switch(heroId) {
+            case 'bakugo':
+                return "💥 SMETTILA DI MANDARMI MESSAGGI COSI VELOCEMENTE! FAI SURRISCALDARE I MIEI GUANTI DI SUPPORTO!";
+            case 'deku':
+                return "⚡ Scusami! C'è una fortissima interferenza di segnale radio dovuta al combattimento in corso... aspetta un istante e riprova!";
+            case 'todoroki':
+                return "❄️ Il terminale si è temporaneamente congelato a causa del mio ghiaccio. Diamo tempo al sistema di riprendersi.";
+            case 'uraraka':
+                return "🌸 Oh no! C'è troppa pressione sulla linea di trasmissione della U.A.! Facciamo una piccolissima pausa!";
+            case 'allmight':
+                return "💪 HAHAHA! La mia connessione sta dando il massimo, ma anche un vero Eroe deve riprendere fiato per un istante!";
+            default:
+                return "⚠️ Terminale temporaneamente sovraccarico. Il server U.A. sta gestendo troppe trasmissioni.";
         }
+    }
+
+    // Gestisce il timer visivo di conto alla rovescia interattivo sul pulsante di invio
+    function startCountdownLock(sender, baseText, seconds) {
+        const msg = document.createElement('div');
+        msg.className = `flex justify-start message-appear`;
+        const timerId = `timer-${Date.now()}`;
+        
+        msg.innerHTML = `
+            <div class="max-w-[85%] bg-slate-100 text-slate-800 rounded-t-2xl rounded-br-2xl p-3 shadow-sm text-sm">
+                <p class="mb-2">${baseText}</p>
+                <div class="flex items-center gap-2 mt-2 bg-red-50 text-red-600 px-3 py-1.5 rounded-xl text-xs font-bold w-fit border border-red-100/50">
+                    <span class="animate-ping inline-flex h-2 w-2 rounded-full bg-red-500"></span>
+                    <span>Saturazione canali U.A. Riprova tra: <span id="${timerId}" class="font-mono">${seconds}s</span></span>
+                </div>
+            </div>
+        `;
+        chatWindow.appendChild(msg);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+        
+        let currentSeconds = seconds;
+        
+        // Applica il blocco sul pulsante invio ma lascia scrivere liberamente
+        setInputLock(true, `[COOLDOWN] Attendi ${currentSeconds}s prima di inviare...`);
+
+        const interval = setInterval(() => {
+            currentSeconds--;
+            const timerEl = document.getElementById(timerId);
+            
+            if (timerEl) {
+                timerEl.innerText = `${currentSeconds}s`;
+            }
+            
+            userInput.placeholder = `[COOLDOWN] Attendi ${currentSeconds}s prima di inviare...`;
+
+            if (currentSeconds <= 0) {
+                clearInterval(interval);
+                // Sblocca il pulsante d'invio
+                setInputLock(false, "Invia un messaggio breve...");
+                
+                if (timerEl) {
+                    const parent = timerEl.parentElement;
+                    parent.innerHTML = `✅ Pronto per trasmettere!`;
+                    parent.className = `flex items-center gap-2 mt-2 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-xl text-xs font-bold w-fit border border-emerald-100/50`;
+                }
+            }
+        }, 1000);
+    }
+
+    async function getAIResponse(query) {
+        // Disabilita solo il pulsante di invio, puoi continuare a scrivere nella casella di testo!
+        setInputLock(true, "U.A. sta elaborando la trasmissione...");
+        showLoading();
+        
+        // Aggiungiamo sempre e subito il messaggio alla cronologia locale
+        chatHistory.push({ role: "user", parts: [{ text: query }] });
 
         const sysInstruction = `${currentHero.prompt} Rispondi all'utente ${userName}. Rispondi sempre in italiano, in modo brevissimo (max 20 parole). Sii molto fedele al tuo carattere e alle relazioni del manga.`;
 
+        // SANIFICAZIONE DELLA CRONOLOGIA DEI MESSAGGI (Anti-Bug Alternanza Ruoli)
+        let sanitizedHistory = [];
+        chatHistory.forEach(item => {
+            if (sanitizedHistory.length === 0) {
+                if (item.role === 'user') {
+                    sanitizedHistory.push(JSON.parse(JSON.stringify(item)));
+                }
+            } else {
+                const last = sanitizedHistory[sanitizedHistory.length - 1];
+                if (last.role === item.role) {
+                    // Unisce i messaggi consecutivi dello stesso autore in un unico testo pulito
+                    last.parts[0].text += " " + item.parts[0].text;
+                } else {
+                    sanitizedHistory.push(JSON.parse(JSON.stringify(item)));
+                }
+            }
+        });
+
+        // Modificato il modello richiamato in `gemini-2.5-flash` per la piena compatibilità con l'endpoint `v1beta`
         const payload = {
-            contents: [...chatHistory],
+            contents: sanitizedHistory,
             systemInstruction: { parts: [{ text: sysInstruction }] }
         };
 
-        // Aggiornato all'endpoint stabile corretto v1 per evitare blocchi
         try {
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            // Chiamata stabile all'endpoint v1beta con gemini-2.5-flash
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
+            
             const data = await res.json();
-            const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Errore di segnale...";
+            
+            // Gestione immediata del limite di quota superata senza ripetere a vuoto
+            if (data.error && data.error.status === "RESOURCE_EXHAUSTED") {
+                removeLoading();
+                chatHistory.pop(); // Rimuoviamo l'invio fallito per non inquinare la chat
+                
+                let waitSeconds = 15; 
+                const match = data.error.message.match(/retry in ([\d\.]+)s/i);
+                if (match && match[1]) {
+                    waitSeconds = Math.ceil(parseFloat(match[1]));
+                }
+                
+                const baseMsg = getFallbackInCharacterMessage(currentHero.id);
+                startCountdownLock(currentHero.id, baseMsg, waitSeconds);
+                return;
+            }
+            
+            // Gestione altri errori della chiave (es. API_KEY_INVALID, chiave revocata, etc.)
+            if (data.error) {
+                removeLoading();
+                chatHistory.pop();
+                addMessage(currentHero.id, `🚨 ERRORE SICUREZZA U.A. - Google ha rifiutato la chiave.\nDettaglio: "${data.error.message}" (Stato: ${data.error.status}).`);
+                setInputLock(false, "Invia un messaggio breve...");
+                return;
+            }
+            
+            const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Nessun segnale ricevuto dalla U.A.";
             
             removeLoading();
             addMessage(currentHero.id, text);
             chatHistory.push({ role: "model", parts: [{ text: text }] });
+            
+            // Sblocca il pulsante d'invio
+            setInputLock(false, "Invia un messaggio breve...");
+            
         } catch (e) {
             removeLoading();
-            addMessage(currentHero.id, "UA Offline o Errore Chiave.");
+            chatHistory.pop();
+            addMessage(currentHero.id, `⚠️ Terminale offline. Impossibile stabilire una connessione: ${e.message}`);
+            setInputLock(false, "Invia un messaggio breve...");
         }
     }
 
@@ -353,6 +544,9 @@
 
     chatForm.onsubmit = (e) => {
         e.preventDefault();
+        // Se stiamo aspettando una risposta o in cooldown, impedisci solo l'invio multiplo
+        if (isWaitingForResponse) return;
+        
         const val = userInput.value.trim();
         if(!val) return;
         addMessage('user', val);
