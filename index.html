@@ -210,8 +210,7 @@
         return `https://ui-avatars.com/api/?name=${encodeURIComponent(hero.name)}&background=${hero.textColor.includes('emerald') ? '10b981' : hero.textColor.includes('orange') ? 'f97316' : hero.textColor.includes('blue') ? '3b82f6' : hero.textColor.includes('pink') ? 'ec4899' : '7e22ce'}&color=fff&size=128&bold=true`;
     }
 
-    startBtn.onclick = () => {
-        startBtn.onclick = () => {
+    startBtn.onclick = () =>
         const val = userNameInput.value.trim();
         if(!val) return;
         
