@@ -3,20 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MHA: Chat Plus Ultra - AI Edition</title>
+    <title>MHA: Chat Plus Ultra</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Bangers&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f0f2f5;
+            -webkit-tap-highlight-color: transparent;
         }
         .hero-font {
             font-family: 'Bangers', cursive;
             letter-spacing: 1px;
         }
         .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
+            width: 4px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
             background: transparent;
@@ -26,10 +27,10 @@
             border-radius: 10px;
         }
         .message-appear {
-            animation: fadeIn 0.3s ease-out;
+            animation: fadeIn 0.25s ease-out forwards;
         }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .loading-dot {
@@ -43,54 +44,62 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900">
+<body class="bg-slate-50 text-slate-900 flex flex-col min-h-screen">
 
-<div id="app" class="max-w-4xl mx-auto h-screen flex flex-col p-4 md:p-6">
-    <header class="flex items-center justify-between mb-6 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+<div id="app" class="max-w-4xl w-full mx-auto h-screen flex flex-col p-3 md:p-6 justify-between">
+    <!-- Header -->
+    <header class="flex items-center justify-between mb-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100 shrink-0">
         <div class="flex items-center gap-3">
-            <div class="bg-yellow-400 p-2 rounded-lg shadow-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="bg-yellow-400 p-2 rounded-xl shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
             </div>
             <div>
-                <h1 class="hero-font text-2xl text-blue-600 uppercase leading-none">Chat Plus Ultra</h1>
-                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Accademia U.A. - AI Powered</p>
+                <h1 class="hero-font text-xl md:text-2xl text-blue-600 uppercase leading-none">Chat Plus Ultra</h1>
+                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">Accademia U.A. - AI Powered</p>
             </div>
         </div>
-        <button id="back-btn" class="hidden text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2 rounded-xl transition-all uppercase tracking-tighter">
-            Torna Indietro
+        <button id="back-btn" class="hidden text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-2 rounded-xl transition-all uppercase tracking-tighter">
+            Indietro
         </button>
     </header>
 
-    <div id="name-step" class="flex-1 flex flex-col items-center justify-center text-center message-appear">
-        <div class="bg-white p-8 rounded-3xl shadow-xl border border-slate-100 w-full max-w-md">
-            <h2 class="hero-font text-3xl text-slate-800 mb-2">Identificati!</h2>
-            <p class="text-slate-500 text-sm mb-6">Inserisci il tuo nome per accedere al terminale U.A.</p>
-            <input type="text" id="user-name-input" placeholder="Il tuo nome..." class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 outline-none focus:border-blue-500 transition-all mb-4 text-center font-bold">
-            <button id="start-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-200 transition-all active:scale-95">
-                Accedi
+    <!-- Step 1: Inserimento Nome -->
+    <div id="name-step" class="flex-1 flex flex-col items-center justify-center text-center message-appear p-2">
+        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-xl border border-slate-100 w-full max-w-md">
+            <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-md rotate-3">
+                <span class="text-white font-black text-2xl hero-font">UA</span>
+            </div>
+            <h2 class="hero-font text-3xl text-slate-800 mb-2">IDENTIFICATI!</h2>
+            <p class="text-slate-500 text-xs md:text-sm mb-6">Inserisci il tuo nome da eroe o studente per accedere al sistema della Classe 1-A.</p>
+            <input type="text" id="user-name-input" placeholder="Il tuo nome..." class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-3.5 outline-none focus:border-blue-500 transition-all mb-4 text-center font-bold text-base">
+            <button id="start-btn" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-blue-100 transition-all uppercase tracking-wider text-sm">
+                Accedi al Terminale
             </button>
         </div>
     </div>
 
-    <div id="hero-selector" class="hidden flex-1 overflow-y-auto custom-scrollbar">
-        <div class="text-center mb-8 message-appear">
-            <h2 class="text-xl font-extrabold text-slate-800" id="welcome-msg">Benvenuto</h2>
-            <p class="text-slate-500 text-sm">Seleziona un Eroe per iniziare la simulazione.</p>
+    <!-- Step 2: Selettore Eroi -->
+    <div id="hero-selector" class="hidden flex-1 overflow-y-auto custom-scrollbar px-1">
+        <div class="text-center mb-6 message-appear">
+            <h2 class="text-lg md:text-xl font-extrabold text-slate-800" id="welcome-msg">Benvenuto</h2>
+            <p class="text-slate-500 text-xs">Seleziona un Eroe per avviare la simulazione di comunicazione.</p>
         </div>
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 pb-8" id="hero-grid">
-            </div>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 pb-6" id="hero-grid">
+            <!-- Eroi iniettati da JS -->
+        </div>
     </div>
 
-    <div id="chat-interface" class="hidden flex-1 flex flex-col gap-4 overflow-hidden">
-        <div id="active-hero-banner" class="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100"></div>
+    <!-- Step 3: Interfaccia Chat -->
+    <div id="chat-interface" class="hidden flex-1 flex flex-col gap-3 overflow-hidden">
+        <div id="active-hero-banner" class="flex items-center gap-3 bg-white p-3 rounded-2xl shadow-sm border border-slate-100 shrink-0"></div>
 
-        <div id="chat-window" class="flex-1 overflow-y-auto custom-scrollbar bg-white rounded-2xl shadow-inner border border-slate-100 p-4 space-y-4"></div>
+        <div id="chat-window" class="flex-1 overflow-y-auto custom-scrollbar bg-white rounded-2xl shadow-inner border border-slate-100 p-3 space-y-3"></div>
 
-        <form id="chat-form" class="bg-white p-2 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-2">
-            <input type="text" id="user-input" placeholder="Invia un messaggio breve..." class="flex-1 bg-transparent px-4 py-3 outline-none text-slate-700" autocomplete="off">
-            <button type="submit" id="send-btn" class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-xl transition-all shadow-md active:scale-95">
+        <form id="chat-form" class="bg-white p-1.5 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-2 shrink-0">
+            <input type="text" id="user-input" placeholder="Invia un messaggio breve..." class="flex-1 bg-transparent px-3 py-2.5 outline-none text-slate-700 text-sm" autocomplete="off">
+            <button type="submit" id="send-btn" class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white p-2.5 rounded-xl transition-all shadow-md">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
                 </svg>
@@ -98,20 +107,23 @@
         </form>
     </div>
 
-    <div id="modal-overlay" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl">
-            <h3 class="text-xl font-bold mb-2">Tornare alla selezione?</h3>
-            <p class="text-slate-600 mb-6 text-sm">La conversazione attuale verrà persa.</p>
-            <div class="flex gap-3">
-                <button id="modal-cancel" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 rounded-xl font-bold text-slate-700">No</button>
-                <button id="modal-confirm" class="flex-1 py-3 bg-red-500 hover:bg-red-600 rounded-xl font-bold text-white">Sì</button>
+    <!-- Modals -->
+    <div id="modal-overlay" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl p-6 max-w-xs w-full shadow-2xl message-appear">
+            <h3 class="text-lg font-bold mb-1">Tornare indietro?</h3>
+            <p class="text-slate-500 mb-5 text-xs">La conversazione attuale con questo eroe verrà persa.</p>
+            <div class="flex gap-2.5">
+                <button id="modal-cancel" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl font-bold text-slate-700 text-xs">No</button>
+                <button id="modal-confirm" class="flex-1 py-2.5 bg-red-500 hover:bg-red-600 rounded-xl font-bold text-white text-xs">Sì</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
+    // La tua chiave API corretta recuperata con successo
     const apiKey = "AIzaSyBBeQuDgzieCD6I6h1mDr-Wl8zR2-e7Uhg"; 
+    
     const HEROES = [
         {
             id: 'deku',
@@ -119,8 +131,9 @@
             alias: 'Deku',
             textColor: 'text-emerald-600',
             borderColor: 'border-emerald-200',
+            bgColor: 'bg-emerald-500',
             image: "image_29e2c1.jpg",
-            prompt: "Sei Izuku Midoriya. Rispondi in italiano (max 20 parole). Reazioni nomi: SE 'Izuku/Midoriya/Deku' -> Shock, pensi a un impostore. SE 'Kacchan' -> Nervoso/Ammirato. SE 'Iida' -> Chiama 'Iida-kun' e sii formale. SE 'All Might' -> Entusiasta. SE 'Mineta' -> Preoccupato per il suo comportamento."
+            prompt: "Sei Izuku Midoriya (Deku). Rispondi in italiano (max 20 parole). Reazioni nomi: SE l'utente è 'Izuku/Midoriya/Deku' -> Shock, pensi a un impostore. SE è 'Kacchan' -> Sii nervoso ma ammirato. SE è 'Iida' -> Chiama 'Iida-kun' e sii formale. SE è 'All Might' -> Entusiasta."
         },
         {
             id: 'bakugo',
@@ -128,8 +141,9 @@
             alias: 'Dynamight',
             textColor: 'text-orange-600',
             borderColor: 'border-orange-200',
+            bgColor: 'bg-orange-500',
             image: "image_29e247.jpg",
-            prompt: "Sei Katsuki Bakugo. Brusco (max 15 parole). Reazioni nomi: SE 'Katsuki/Bakugo' -> Rabbia furiosa, 'Chi sei?!'. SE 'Deku' -> Insultalo ('Inutile Deku!'). SE 'Iida' -> 'Smettila di gesticolare, quattrocchi!'. SE 'Mineta' -> 'Sparisci, sgorbio!' o minaccialo di farlo esplodere."
+            prompt: "Sei Katsuki Bakugo. Brusco e urlato (max 15 parole). Reazioni nomi: SE l'utente è 'Katsuki/Bakugo' -> Rabbia furiosa, 'Chi sei?!'. SE è 'Deku' -> Insultalo ('Inutile Deku!'). SE è 'Iida' -> 'Smettila di gesticolare!'. SE è 'Kirishima' -> Sii quasi civile."
         },
         {
             id: 'todoroki',
@@ -137,8 +151,9 @@
             alias: 'Shoto',
             textColor: 'text-blue-600',
             borderColor: 'border-slate-200',
+            bgColor: 'bg-blue-500',
             image: "image_29df7c.jpg",
-            prompt: "Sei Shoto Todoroki. Stoico (max 12 parole). Reazioni nomi: SE 'Shoto/Todoroki' -> 'Sei un esperimento di mio padre?'. SE 'Endeavor' -> Freddo glaciale. SE 'Midoriya' -> Rispettoso. SE 'Iida' -> Serio."
+            prompt: "Sei Shoto Todoroki. Stoico e letterale (max 12 parole). Reazioni nomi: SE l'utente è 'Shoto/Todoroki' -> 'Sei un esperimento di mio padre?'. SE è 'Endeavor' -> Freddo glaciale. SE è 'Midoriya' -> Rispettoso."
         },
         {
             id: 'uraraka',
@@ -146,8 +161,9 @@
             alias: 'Uravity',
             textColor: 'text-pink-500',
             borderColor: 'border-pink-200',
+            bgColor: 'bg-pink-500',
             image: "image_29df21.png",
-            prompt: "Sei Ochaco Uraraka. Allegra (max 15 parole). Reazioni nomi: SE 'Ochaco/Uraraka' -> 'Eh? Mi sto guardando allo specchio?'. SE 'Deku' -> Imbarazzo/Timidezza. SE 'Iida' -> Amichevole. SE 'Mineta' -> Disgusto/Paura, cerca di stargli lontano."
+            prompt: "Sei Ochaco Uraraka. Allegra ed energica (max 15 parole). Reazioni nomi: SE l'utente è 'Ochaco/Uraraka' -> 'Eh? Mi sto guardando allo specchio?'. SE è 'Deku' -> Imbarazzata e timida. SE è 'Iida' -> Amichevole."
         },
         {
             id: 'mineta',
@@ -155,8 +171,9 @@
             alias: 'Grape Juice',
             textColor: 'text-purple-600',
             borderColor: 'border-purple-200',
+            bgColor: 'bg-purple-500',
             image: "https://ui-avatars.com/api/?name=Minoru+Mineta&background=7e22ce&color=fff&size=128",
-            prompt: "Sei Minoru Mineta. Codardo e ossessionato dalle ragazze (max 20 parole). SE l'utente ha un nome femminile (Ochaco, Momo, Tsuyu, Mina, Jiro, Eri o nomi generici femminili) sii esageratamente felice e prova a flirtare in modo buffo. SE l'utente è un maschio (Deku, Bakugo, Iida) sii geloso o lamentati che non sono ragazze. SE si chiama Mineta, urla che c'è solo un re dell'uva."
+            prompt: "Sei Minoru Mineta. Codardo e ossessionato dalle ragazze (max 20 parole). SE l'utente ha un nome femminile (Ochaco, Momo, Tsuyu, Mina, Jiro) sii felicissimo e prova a flirtare in modo buffo. SE è maschio (Deku, Bakugo, Iida) sii geloso o lamentati."
         },
         {
             id: 'allmight',
@@ -164,8 +181,9 @@
             alias: 'All Might',
             textColor: 'text-blue-700',
             borderColor: 'border-yellow-200',
+            bgColor: 'bg-yellow-500',
             image: "image_29debe.png",
-            prompt: "Sei All Might. Eroico (max 20 parole). Reazioni nomi: SE 'All Might/Toshinori/Yagi' -> Ridi e chiedi se è un fan. SE 'Midoriya' -> 'Giovane Midoriya!'. SE 'Mineta' -> 'Giovane Mineta, dacci dentro... ma con decoro!'."
+            prompt: "Sei All Might. Eroico ed esuberante (max 20 parole). Reazioni nomi: SE l'utente è 'All Might/Toshinori' -> Chiedi se è un fan accanito. SE è 'Midoriya' -> 'Giovane Midoriya!'. SE è 'Bakugo' -> 'Giovane Bakugo!'."
         }
     ];
 
@@ -187,6 +205,11 @@
     const backBtn = document.getElementById('back-btn');
     const modalOverlay = document.getElementById('modal-overlay');
 
+    // Funzione per generare avatar di riserva se l'immagine locale fallisce
+    function getFallbackAvatar(hero) {
+        return `https://ui-avatars.com/api/?name=${encodeURIComponent(hero.name)}&background=${hero.textColor.includes('emerald') ? '10b981' : hero.textColor.includes('orange') ? 'f97316' : hero.textColor.includes('blue') ? '3b82f6' : hero.textColor.includes('pink') ? 'ec4899' : '7e22ce'}&color=fff&size=128&bold=true`;
+    }
+
     startBtn.onclick = () => {
         const val = userNameInput.value.trim();
         if(!val) return;
@@ -200,13 +223,13 @@
         heroGrid.innerHTML = '';
         HEROES.forEach(hero => {
             const card = document.createElement('div');
-            card.className = `bg-white border-2 ${hero.borderColor} p-4 rounded-3xl shadow-sm hover:shadow-md cursor-pointer transition-all hover:-translate-y-1 text-center`;
+            card.className = `bg-white border-2 ${hero.borderColor} p-4 rounded-3xl shadow-sm hover:shadow-md cursor-pointer transition-all hover:-translate-y-1 text-center flex flex-col items-center justify-center`;
             card.innerHTML = `
-                <div class="w-20 h-20 mx-auto mb-3 rounded-full overflow-hidden border-2 ${hero.borderColor} bg-slate-50 flex items-center justify-center">
-                    <img src="${hero.image}" class="w-full h-full object-cover" alt="${hero.name}">
+                <div class="w-16 h-16 md:w-20 md:h-20 mb-3 rounded-full overflow-hidden border-2 ${hero.borderColor} bg-slate-50 flex items-center justify-center shrink-0">
+                    <img src="${hero.image}" class="w-full h-full object-cover" alt="${hero.name}" onerror="this.onerror=null; this.src='${getFallbackAvatar(hero)}';">
                 </div>
-                <h3 class="font-bold text-slate-800 text-sm">${hero.name}</h3>
-                <p class="text-[10px] ${hero.textColor} font-bold uppercase">${hero.alias}</p>
+                <h3 class="font-bold text-slate-800 text-xs md:text-sm">${hero.name}</h3>
+                <p class="text-[9px] ${hero.textColor} font-bold uppercase tracking-wider">${hero.alias}</p>
             `;
             card.onclick = () => selectHero(hero);
             heroGrid.appendChild(card);
@@ -219,16 +242,16 @@
         goToStep('chat');
         
         document.getElementById('active-hero-banner').innerHTML = `
-            <div class="w-12 h-12 rounded-full overflow-hidden border-2 ${hero.borderColor} bg-slate-50">
-                <img src="${hero.image}" class="w-full h-full object-cover" alt="${hero.name}">
+            <div class="w-10 h-10 rounded-full overflow-hidden border-2 ${hero.borderColor} bg-slate-50 shrink-0">
+                <img src="${hero.image}" class="w-full h-full object-cover" alt="${hero.name}" onerror="this.onerror=null; this.src='${getFallbackAvatar(hero)}';">
             </div>
             <div>
-                <h3 class="font-bold text-slate-800 text-sm">${hero.name}</h3>
-                <p class="text-[10px] ${hero.textColor} font-bold uppercase">${hero.alias}</p>
+                <h3 class="font-bold text-slate-800 text-xs md:text-sm leading-tight">${hero.name}</h3>
+                <p class="text-[9px] ${hero.textColor} font-bold uppercase tracking-widest">${hero.alias}</p>
             </div>
         `;
         
-        chatWindow.innerHTML = `<div class="text-center text-slate-400 text-[10px] py-2 uppercase tracking-widest font-bold">Protocollo avviato</div>`;
+        chatWindow.innerHTML = `<div class="text-center text-slate-400 text-[9px] py-1 uppercase tracking-widest font-bold">Terminale U.A. Attivo</div>`;
         getAIResponse(`Ciao, io sono ${userName}.`);
     }
 
@@ -270,7 +293,7 @@
             chatHistory.push({ role: "user", parts: [{ text: query }] });
         }
 
-        const sysInstruction = `${currentHero.prompt} Rispondi all'utente ${userName}. Rispondi sempre in italiano, breve (max 20 parole). Reagisci al nome dell'utente basandoti sulle relazioni di My Hero Academia.`;
+        const sysInstruction = `${currentHero.prompt} Rispondi all'utente ${userName}. Rispondi sempre in italiano, in modo brevissimo (max 20 parole). Sii molto fedele al tuo carattere e alle relazioni del manga.`;
 
         const payload = {
             contents: [...chatHistory, { role: "user", parts: [{ text: query }] }],
@@ -291,7 +314,7 @@
             chatHistory.push({ role: "model", parts: [{ text: text }] });
         } catch (e) {
             removeLoading();
-            addMessage(currentHero.id, "UA Offline.");
+            addMessage(currentHero.id, "UA Offline o Errore Chiave.");
         }
     }
 
