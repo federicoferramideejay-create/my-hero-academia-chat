@@ -209,16 +209,23 @@
     function getFallbackAvatar(hero) {
         return `https://ui-avatars.com/api/?name=${encodeURIComponent(hero.name)}&background=${hero.textColor.includes('emerald') ? '10b981' : hero.textColor.includes('orange') ? 'f97316' : hero.textColor.includes('blue') ? '3b82f6' : hero.textColor.includes('pink') ? 'ec4899' : '7e22ce'}&color=fff&size=128&bold=true`;
     }
-
-    startBtn.onclick = () =>
+        startBtn.onclick = () => {
         const val = userNameInput.value.trim();
         if(!val) return;
         
-        // Chiede la chiave API con un popup all'accesso
-        const savedKey = prompt("Inserisci la tua Gemini API Key per accedere al terminale U.A.:");
+        const savedKey = prompt("🚨 TERMINALE U.A. - SISTEMA DI SICUREZZA 🚨\n\nIdentificazione richiesta.\nInserisci il codice di autorizzazione della tua licenza provvisoria da Eroe (Gemini API Key):");
+        
         if(!savedKey) {
-            alert("La chiave API è necessaria per connettersi alla Classe 1-A!");
+            alert("❌ ACCESSO NEGATO!\nSenza codice di autorizzazione non puoi connetterti alla Classe 1-A.");
             return;
+        }
+        
+        apiKey = savedKey.trim();
+        userName = val;
+        goToStep('selector');
+        welcomeMsg.innerText = `Benvenuto, ${userName}!`;
+        initHeroGrid();
+    };
         }
         
         apiKey = savedKey.trim();
